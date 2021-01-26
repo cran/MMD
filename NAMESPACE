@@ -1,0 +1,8 @@
+exportPattern("^[[:alpha:]]+")
+import(e1071, bigmemory, plyr)
+
+importFrom("grDevices", "dev.off", "pdf")
+    importFrom("graphics", "barplot", "hist", "par")
+    importFrom("stats", "ecdf", "var")
+    importFrom("utils", "read.table", "setTxtProgressBar",
+               "txtProgressBar", "write.table")

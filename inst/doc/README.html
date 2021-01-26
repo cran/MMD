@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Francisco Perez-Reche" />
+
+
+<title>Tutorial for the R MMD package</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Tutorial for the R MMD package</h1>
+<h4 class="author">Francisco Perez-Reche</h4>
+
+
+
+<p>The MMD package was developed in [1]. This tutorial illustrates the functioning of the MMD package using <em>Campylobacter</em> isolates from human and five animal sources (Cattle, Chicken, Pig, Sheep, and WB). For illustration purposes, the example uses genotypes of reduced size consisting 10 isolates per host reservoir described with genotypes of 10 SNPs. The data used in this tutorial comes with the MMD package. Other datasets studied in Ref. [1] are available from <a href="https://figshare.com/s/726d493387b501c4b70a"> this link </a>. To use these examples, simply download the data from the link.</p>
+<!-- To use the functions from the MMD package, the following packages must be loaded:
+
+
+```r
+library(MMD)
+library(e1071)
+library(bigmemory)
+library(plyr)
+```
+-->
+<div id="source-attribution" class="section level2">
+<h2>Source attribution</h2>
+<div id="setting-the-parameters-for-source-attribution" class="section level3">
+<h3>Setting the parameters for source attribution</h3>
+<p>Set the file names of the file csv containing genotype data and file pop containing population names used in this example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>datafile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;Campylobacter_10SNP_HlW.csv&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;MMD&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>popfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;Campylobacter_10SNP_HlW.pop&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;MMD&quot;</span>)</span></code></pre></div>
+<p>Note that the full path to the files should be specified. For example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>datafile</span></code></pre></div>
+<pre><code>## [1] &quot;C:/Users/s05fp2/AppData/Local/Temp/Rtmp0w5QXw/Rinstf2c33403434/MMD/extdata/Campylobacter_10SNP_HlW.csv&quot;</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>popfile</span></code></pre></div>
+<pre><code>## [1] &quot;C:/Users/s05fp2/AppData/Local/Temp/Rtmp0w5QXw/Rinstf2c33403434/MMD/extdata/Campylobacter_10SNP_HlW.pop&quot;</code></pre>
+<p>This example searches for the data from the MMD package which is found using <code>system.file</code>. In general, however, in this step you should specify the path to the directory where you have stored the data you want to analyse. <br /></p>
+<p>Set the name of the population to be attributed. In this case, we want to attribute <em>Campylobacter</em> isolates from “Human”:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>ToAttribute &lt;-<span class="st"> &quot;Human&quot;</span></span></code></pre></div>
+<p>Introduce the population names of the genotypes to be used as sources (these are available from the file *.pop):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>sourcenames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Cattle&quot;</span>,<span class="st">&quot;Chicken&quot;</span>,<span class="st">&quot;Pig&quot;</span>,<span class="st">&quot;Sheep&quot;</span>,<span class="st">&quot;WB&quot;</span>)</span></code></pre></div>
+<p>Set the maximum number of loci to be used in the analysis:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>NL &lt;-<span class="st"> </span><span class="dv">100</span></span></code></pre></div>
+<p><code>NL</code> was set to 100 loci as an example but the program will use 10 loci since the genotypes in the file <code>Campylobacter_10SNP_HlW.csv</code> consist of 10 SNPs.</p>
+</div>
+<div id="running-the-function-mmd_attr-for-source-attribution-verbosefalse-by-default-even-if-verbose-is-not-specified-set-verbosetrue-to-see-a-progress-bar-for-computations-if-you-wish" class="section level3">
+<h3>Running the function <code>MMD_attr</code> for source attribution (<code>verbose=FALSE</code> by default even if <code>verbose</code> is not specified; set <code>verbose=TRUE</code> to see a progress bar for computations if you wish):</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>attribution &lt;-<span class="st"> </span><span class="kw">MMD_attr</span>(datafile,popfile,NL,sourcenames,ToAttribute,<span class="dt">verbose=</span><span class="ot">FALSE</span>)</span></code></pre></div>
+</div>
+<div id="source-attribution-results" class="section level3">
+<h3>Source attribution results:</h3>
+<p>In this example, the source attribution results were stored in <code>attribution</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>attribution</span></code></pre></div>
+<p>The list contains 7 items:</p>
+<ul>
+<li><p>Number of individuals of unknown origin (<em>Campylobacter</em> isolates from humans):<br /> [[1]]<br /> [1] 500</p></li>
+<li><p>Number of sources:<br /> [[2]]<br /> [1] 5</p></li>
+<li><p>Statistics of the attribution probability to sources, p<sub>s</sub>:<br /> [[3]]<br /> Sources mean standard.deviation X2.5.percentile X97.5.percentile<br /> 1 Cattle 0.28475914 0.003788603 0.27715866 0.29197614<br /> 2 Chicken 0.32152237 0.004583734 0.31249737 0.33048377<br /> 3 Pig 0.05004946 0.007727446 0.03526279 0.06562583<br /> 4 Sheep 0.24744750 0.001905219 0.24357132 0.25093940<br /> 5 WB 0.09623947 0.006093308 0.08474618 0.10863976</p></li>
+<li><p>Runtime of the calculation:<br /> [[4]]<br /> Time difference of 1.759793 mins</p></li>
+<li><p>Probability p<sub>u,s</sub> that each individual of unknown origin is attributed to sources:<br /> [[5]]<br /> individual Cattle Chicken Pig Sheep WB<br /> 1 301 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> 2 302 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> 3 303 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> 4 304 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> 5 305 0.192435285 0.01012817 0.3155315 0.2532043 0.22870068<br /> 6 306 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> 7 307 0.317562288 0.36062158 0.0000000 0.2610470 0.06076916<br /> …..</p></li>
+<li><p>Number of loci:<br /> [[6]]<br /> [1] 10</p></li>
+<li><p>Parameter q used to calculate the q-quantile of the Hamming distance in the MMD method. Since a value was not specified for the <code>MMD_attr</code> function, the default value was used:<br /> [[7]]<br /> [1] 0.01</p></li>
+</ul>
+<p>For example, a bar chart for the mean of the probability of attribution of <em>Campylobacter</em> human isolates to food sources can be easily obtained from <code>attribution</code> as follows:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">barplot</span>(<span class="dt">height =</span> attribution[[<span class="dv">3</span>]]<span class="op">$</span>mean,<span class="dt">names.arg =</span> attribution[[<span class="dv">3</span>]]<span class="op">$</span>Sources,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">cex.names =</span> <span class="fl">0.8</span>,<span class="dt">main=</span><span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="st">&quot;Attribution probability, p&quot;</span>[s]))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="self-attribution" class="section level2">
+<h2>Self-attribution</h2>
+<p>This example illustrates self-attribution of <em>Campylobacter</em> isolates from the pig reservoir of the dataset used above. The genotypes from pig are split into training and test datasets. The test dataset is defined by randomly drawing 50% of the isolates from pig reservoir; the remaining isolates define the training dataset.</p>
+<div id="setting-the-parameters" class="section level3">
+<h3>Setting the parameters</h3>
+<!--To start with, we set the name of the data file (without extension), population name of the genotypes to be attributed, population name of the genotypes to be used as sources and maximum number of loci to be used:
+
+
+```r
+datadir <- "~/Work/Source_Attribution/R_projects/project"
+dataname <- "Campylobacter_10SNP_HlW"
+NL <- 100
+sourcenames <- c("Cattle","Chicken","Pig","Sheep","WB")
+```
+-->
+<p>To run self-attribution, the function <code>MMD_attr</code> can be executed as follows:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>SelfAttribution &lt;-<span class="st"> </span><span class="kw">MMD_attr</span>(datafile,popfile,NL,sourcenames,<span class="dt">ToAttribute =</span> <span class="st">&quot;Pig&quot;</span>,<span class="dt">SelfA =</span> <span class="st">&quot;yes&quot;</span>,<span class="dt">optq =</span> <span class="st">&quot;yes&quot;</span>, <span class="dt">pqmin =</span> <span class="dv">0</span>, <span class="dt">pqmax =</span> <span class="fl">0.5</span>, <span class="dt">np=</span><span class="dv">1000</span>, <span class="dt">fSelfA =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<p>Here, <br /> * <code>ToAttribute</code> is set to the “Pig” reservoir which will be analysed for self-attribution.<br /> * <code>SelfA</code> is set to “yes” to do self-attribution (<code>SelfA</code> is set to “no” by default in the function <code>MMD_attr</code>, i.e. it is set by default to do source attribution instead of self-attribution).<br /> * <code>fSelfA</code> is the fraction of genotypes in the “Pig” reservoir used to define the test dataset. Here, this is set to 0.5 which, in fact, is the default value. <br /> * <code>optq</code> is set to “yes” to optimise the q-quantile for self-attribution accuracy (<code>optq</code> is set to “no” by default in the function <code>MMD_attr</code>).<br /> * Optimisation of the q-quantile is done by considering a partition of <code>np</code> values in the interval <code>[pqmin,pqmax]</code> of the q-quantile. * The value of <code>verbose</code> was not explicitly indicated and the function will use the default value, <code>verbose=FALSE</code>, so that a progress bar will not be displayed.</p>
+</div>
+<div id="self-attribution-results" class="section level3">
+<h3>Self-attribution results</h3>
+<p>The results are stored in the list <code>SelfAttribution</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>SelfAttribution</span></code></pre></div>
+<p>The list contains 8 items:</p>
+<ul>
+<li><p>Number of individuals of unknown origin (pig <em>Campylobacter</em> isolates from the test dataset):<br /> [[1]]<br /> [1] 65</p></li>
+<li><p>Number of sources:<br /> [[2]]<br /> [1] 5</p></li>
+<li><p>Statistics of the attribution probability to sources, p<sub>s</sub>:<br /> [[3]]<br /> Sources mean standard.deviation X2.5.percentile X97.5.percentile<br /> 1 Cattle 0.03104321 0.0042615251 0.02321769 0.03993305<br /> 2 Chicken 0.04086488 0.0008201976 0.03933067 0.04237244<br /> 3 Pig 0.70524955 0.0105881858 0.68546798 0.72476244<br /> 4 Sheep 0.16327327 0.0023348811 0.15896031 0.16814020<br /> 5 WB 0.05963771 0.0049012502 0.05068933 0.06987849</p></li>
+<li><p>Probability p<sub>u,s</sub> that each individual of unknown origin is attributed to sources:<br /> [[4]]<br /> individual Cattle Chicken Pig Sheep WB<br /> 1 805 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 2 806 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 3 807 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 4 808 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 5 810 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 6 812 0.006715212 0.04700648 0.7593355 0.1544499 0.03249296<br /> 7 813 0.078421452 0.03136858 0.5881609 0.1882115 0.11383759<br /> …..</p></li>
+<li><p>Runtime of the calculation:<br /> [[5]]<br /> Time difference of 1.941194 mins</p></li>
+<li><p>Number of loci:<br /> [[6]]<br /> [1] 10</p></li>
+<li><p>Value of the q-quantile of the Hamming distance for which the self-attribution accuracy is maximised. Accuracy is the fraction of genotypes in the test dataset that are correctly attributed to the chosen reservoir (pig in this example):<br /> [[7]]<br /> [1] 0.219</p></li>
+<li><p>Self-attribution accuracy as a function of the q-quantile parameter: <br /> [[8]]<br /> q.quantile prob..correct.attribution<br /> 1 0.0000 0.6337530<br /> 2 0.0005 0.6337530<br /> …..</p></li>
+</ul>
+<p>In this case, the bar chart for the probability that isolates of unknown origin are attributed to each of the sources can be obtained as follows:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">barplot</span>(<span class="dt">height =</span> SelfAttribution[[<span class="dv">3</span>]]<span class="op">$</span>mean,<span class="dt">names.arg =</span> SelfAttribution[[<span class="dv">3</span>]]<span class="op">$</span>Sources,<span class="dt">las=</span><span class="dv">2</span>,<span class="dt">cex.names =</span> <span class="fl">0.8</span>,<span class="dt">main=</span><span class="ot">NULL</span>, <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="st">&quot;Attribution probability, p&quot;</span>[s]))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Despite the small number of SNPs used in the example dataset, it is interesting that the program predicts a relatively high probability of attribution to the correct source of pig <em>Campylobacter</em> isolates.</p>
+</div>
+</div>
+<div id="selection-of-informative-loci" class="section level2">
+<h2>Selection of informative loci</h2>
+<p>The package allows informative loci to be selected in terms of entropy and redundancy measures.</p>
+<div id="entropy-measures" class="section level3">
+<h3>Entropy measures</h3>
+<p><code>MMD_Entropy</code> provides entropy measures for individual loci. It can be called as follows:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>EntropyLoci &lt;-<span class="st"> </span><span class="kw">MMD_Entropy</span>(datafile,popfile,NL,sourcenames)</span></code></pre></div>
+<p>Again, here you can specify <code>verbose=TRUE</code> to see a progress bar for computations if you wish.</p>
+<div id="outputs-of-mmd_entropy" class="section level4">
+<h4>Outputs of <code>MMD_Entropy</code></h4>
+<p>The results give a list of 7 items:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>EntropyLoci</span></code></pre></div>
+<ul>
+<li><p>Number of loci used for the calculation:<br /> [[1]]<br /> [1] 10</p></li>
+<li><p>Number of individuals in sources:<br /> [[2]]<br /> [1] 673</p></li>
+<li><p>Proportional weight of each population, q<sub>s</sub>:<br /> [[3]]<br /> Sources qs<br />
+[1,] “Cattle” “0.222882615156018”<br /> [2,] “Chicken” “0.222882615156018”<br /> [3,] “Pig” “0.193164933135215”<br /> [4,] “Sheep” “0.222882615156018”<br /> [5,] “WB” “0.138187221396731”</p></li>
+<li><p>Number of alleles in the dataset:<br /> [[4]]<br /> [1] 4</p></li>
+<li><p>Value of the alleles in the dataset:<br /> [[5]]<br /> [1] 1 2 3 4</p></li>
+<li><p>Data frame with three columns for entropies: Total (HlT), within-sources (HlW) and between-sources (HlB):<br /> [[6]]<br /> HlT HlW HlB<br /> 1 0.01610117 0.01184854 0.004252624<br /> 2 1.24988869 0.63488510 0.615003590<br /> 3 0.91779974 0.49274008 0.425059661<br /> 4 0.91779974 0.49274008 0.425059661<br /> ….</p></li>
+<li><p>Runtime:<br /> [[7]]<br /> Time difference of 0.06805801 secs</p></li>
+</ul>
+<p>Using the list <code>EntropyLoci</code> one can easily plot histograms for the different entropies,</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>histHlT &lt;-<span class="st"> </span><span class="kw">hist</span>(EntropyLoci[[<span class="dv">6</span>]]<span class="op">$</span>HlT,<span class="dt">col=</span><span class="st">&quot;#1C86EE&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>,<span class="dt">xlab=</span><span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;H&quot;</span><span class="op">^</span><span class="st">&quot;T&quot;</span>)),<span class="dt">ylab=</span><span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAS1BMVEUAAAAAADoAAGYAOjoAOpAAZrYchu46AAA6ADo6kNtmAABmADpmtv+QOgCQZgCQ2/+2ZgC2///bkDrb////tmb/25D//7b//9v///8Tf6mCAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAFxUlEQVR4nO2d7XqbNhhA6ZYuq1evLnFs3/+VDgy4gRoOisSMxTm/oFivlfPoC0mVi4tMUjw6A2tHQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgICCNoOJGknBxFEBgtMSZSxvuUxR/TaIgBQEKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFhI0GlXfE2QufgQ0SxWgsqiKL7FZi4yfQqWrGLRjnIX1Cj64+d0mvfX73PDPYIFBR0rO98v5/3L293PVs3UjRGJOQuq//zGzHGsCB2b+rfNEnTaffmBnz7taoW/CxrMiNO0+bIaHzsOOlQasQRBFkPzGMhigg5V6ThiJ1YW3zYq6HBtgE47Gi6+v/65SUGnXfNXj7bQN877YouCzvumcpUoiMNlKahqXOpy8f6aYCSdp6DKTdUBz+jrOVymgpJkbk4WFZSnoKpzmnrLCgmXp6BDlJleuCwFnXaxk2W/wmUqaHT0FxwuS0HnfYIp6ZwFVe+pCYpQxoJu04X2Yv1oiTM3J4sKylRQVcle3g5xnX3Ogo5ffpQvb5HDoYwF1fNBlaDPzQcNJ+1zFFQPFGtBPKPI4bIU1JWgw8iqYUi4LAW1bVAZN1zMWVAzVHRGcRgtcebmZFFBWQryXWwk2uA+rpffgKDLIWpaaAOCHCgOog3/waXnQbTBPe/umBEuS0FdLxb1ppGzoESZm5NFBWUpaMYe39nhshTULvtMv82X143Ul/G+LmNB531jppxopcvqXb/p5jYo6PRPM9ExMVBsduldN+JvUFBXgiZmFLvl++ojA0FbmJOuZxQvTS0ao9vnWb2vbbAEtf3Y5Dix01J9couCZtD1cee9gj6ZuTlZfFZBLj3fjXa7cun5frTuImrpeRAuS0EuPY9E6y5ceh6Jdrty6fl+tF+XLj3fjZY4c3Oy+JyCbi9acZmbk8XnFORO+5Fot6vIReeP4bIU5OaFkWiJMzcniwrKT1CaFvqSuaAUHb2CRqL8n5P2eLbMCgUNwi0siKIrSEHT36Eg+I6HCEqxteOSr6BkKGhWOAVBOAVBOAVBOAVBOAVBOAVBOAVBOAVBOAVBuO0KwoPgNi6o7M4KHj00eNuCPsyHjO3H37agD2sfx+mN5KtmOUEzSlB+BLZBbRHig8uzIazApfl/m0/Fsmt4GbCIoMc2wsQaBMU9j3scmzzu42mCKijuuYIUFPdcQQqKe64gBcU9z19QTigIUBCgIEBBgIIABQEKAhQEKAhQEKAgQEFASkHHjwc3HINPcRimCDxFpJf8duBjNAkF1afEHbs89m7Ck9f3Yeu3veT1UXVJfi8tpaBma0N7oHnvJjz5pT0P69Pf/jXw28dJJ6j5kfX2fKbeTXjy+url3xBBveQrFfR3Xb7bjUO9m/Dk19ugNqiffJVVrGkA2magdxOe/FpjggQNvjC8ixhjpYKCz8LqJ69/VDfyd8871lnFrjefr2LhLeA462yky3anyvxWpJc8vPyOs9puPrAE9ZI3tpKc97PigWLgSLqXfJVt0LVi1DlsRiFlcD/SS34JftXoJT9U9TPNPlNfVgEFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIIABQEKAhQEKAh4CkHvr/UqYqLF9kCeQlBF+ajDQhQEKAhQEKAgYMWCukX66xq9gn5HQUBP0MNQEKAgYNWC2p2KCrqPJQhQEKAgQEGAggAFPQUKAhQEKAhQEKAgQEGAggAFAQoCFAQoCFAQoCBAQYCCAAUBCgIUBCgIUBCgIEBBgIKA/wAsphx2EDR0rQAAAABJRU5ErkJggg==" /><!-- --></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>histHlB &lt;-<span class="st"> </span><span class="kw">hist</span>(EntropyLoci[[<span class="dv">6</span>]]<span class="op">$</span>HlB,<span class="dt">col=</span><span class="st">&quot;#1C86EE&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>,<span class="dt">xlab=</span><span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;H&quot;</span><span class="op">^</span><span class="st">&quot;B&quot;</span>)),<span class="dt">ylab=</span><span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>histHlW &lt;-<span class="st"> </span><span class="kw">hist</span>(EntropyLoci[[<span class="dv">6</span>]]<span class="op">$</span>HlW,<span class="dt">col=</span><span class="st">&quot;#1C86EE&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>,<span class="dt">xlab=</span><span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;H&quot;</span><span class="op">^</span><span class="st">&quot;W&quot;</span>)),<span class="dt">ylab=</span><span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>or a scatterplot of the entropy between sources vs. entropy within sources for each locus:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">plot</span>(<span class="kw">cbind</span>(EntropyLoci[[<span class="dv">6</span>]]<span class="op">$</span>HlW,EntropyLoci[[<span class="dv">6</span>]]<span class="op">$</span>HlB),<span class="dt">col=</span><span class="st">&quot;#1C86EE&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>, <span class="dt">xlab=</span><span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;H&quot;</span><span class="op">^</span><span class="st">&quot;W&quot;</span>)),<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;H&quot;</span><span class="op">^</span><span class="st">&quot;B&quot;</span>)))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="redundancy-of-loci" class="section level3">
+<h3>Redundancy of loci</h3>
+<p>In a sequential selection of loci, the redundancy of the n-th locus can be calculated using the funtion <code>MMD_Rn</code> as follows:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>RedundancyLoci &lt;-<span class="st"> </span><span class="kw">MMD_Rn</span>(datafile,popfile,NL,sourcenames)</span></code></pre></div>
+<div id="outputs-of-mmd_rn" class="section level4">
+<h4>Outputs of <code>MMD_Rn</code></h4>
+<p>The results give a list of 9 items:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>RedundancyLoci</span></code></pre></div>
+<ul>
+<li><p>Number of loci used for the calculation:<br /> [[1]]<br /> [1] 10</p></li>
+<li><p>Number of individuals in sources:<br /> [[2]]<br /> [1] 673</p></li>
+<li><p>Proportional weight of each population, q<sub>s</sub>:<br /> [[3]]<br /> Sources qs<br />
+[1,] “Cattle” “0.222882615156018”<br /> [2,] “Chicken” “0.222882615156018”<br /> [3,] “Pig” “0.193164933135215”<br /> [4,] “Sheep” “0.222882615156018”<br /> [5,] “WB” “0.138187221396731”</p></li>
+<li><p>Number of alleles in the dataset:<br /> [[4]]<br /> [1] 4</p></li>
+<li><p>Value of the alleles in the dataset:<br /> [[5]]<br /> [1] 1 2 3 4</p></li>
+<li><p>Data frame with redundancy R<sub>n</sub> of each locus:<br /> [[6]]<br /> locus Rn_original<br /> 1 2 0.001799635<br /> 2 3 0.889203483<br /> 3 4 1.000000000<br /> ….</p></li>
+<li><p>Index of loci with increasing R<sub>n</sub>:<br /> [[7]]<br /> [1] 1 5 9 8 6 3 2 4 7</p></li>
+<li><p>Data frame with redundancy R<sub>n</sub> of loci after sorting in increasing order:<br /> [[8]]<br /> locus Rn_sorted<br /> 1 2 0.001793803<br /> 2 3 0.002553717<br /> 3 4 0.160958703<br /> 4 5 0.271356486<br /> ….</p></li>
+<li><p>Runtime:<br /> [[9]]<br /> Time difference of 0.13464 secs<br /></p></li>
+</ul>
+<p>For example, one can plot the redundancy R<sub>n</sub> of loci as a function of n and the redundacy of loci sorted in increasing order:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">plot</span>(RedundancyLoci[[<span class="dv">6</span>]],<span class="dt">col=</span><span class="st">&quot;#EE4000&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>,<span class="dt">log=</span><span class="st">&quot;x&quot;</span>,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab=</span><span class="st">&quot;n-th selected locus&quot;</span>,<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&quot;R&quot;</span>[n]))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">plot</span>(RedundancyLoci[[<span class="dv">8</span>]],<span class="dt">col=</span><span class="st">&quot;#EE4000&quot;</span>,<span class="dt">main=</span><span class="ot">NULL</span>,<span class="dt">log=</span><span class="st">&quot;x&quot;</span>,<span class="dt">type=</span><span class="st">&quot;l&quot;</span>,<span class="dt">xlab=</span><span class="st">&quot;n-th selected locus&quot;</span>,<span class="dt">ylab=</span><span class="kw">expression</span>(<span class="st">&quot;R&quot;</span>[n]))</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>[1] Perez-Reche, F.J., Rotariu, O., Lopes, B.S., Forbes, K.J., Strachan, N.J.C. Mining whole genome sequence data to efficiently attribute individuals to source populations, Scientific Reports <strong>10</strong>, 12124 (2020). <a href="https://www.nature.com/articles/s41598-020-68740-6"> https://www.nature.com/articles/s41598-020-68740-6 </a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

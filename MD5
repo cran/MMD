@@ -1,0 +1,15 @@
+693ae29e456bbd95400c60167755bb14 *DESCRIPTION
+5664b72a4326f6ecc39cdbb40f86f02b *NAMESPACE
+3c86e9625984c1d37d725e060f966682 *R/MMD_Entropy.R
+342043a2603ca1658f0bd2a74a62e45d *R/MMD_Rn.R
+dcf7ff9a95177830c710fc03272a0792 *R/MMD_attr.R
+569790c83ac413a49e6396fb20406204 *build/vignette.rds
+e3ea0f9d90027264fa9e8041c32f949e *inst/doc/README.R
+86cd55c8c689ee176eefd2f4e7da4703 *inst/doc/README.Rmd
+1f4b824315ccc6c0f25e78520c7c86e6 *inst/doc/README.html
+728899f3b2482ce91ad8ff11ea25d047 *inst/extdata/Campylobacter_10SNP_HlW.csv
+c7b5edee687993dd271fa9c2e58d132f *inst/extdata/Campylobacter_10SNP_HlW.pop
+88c1e77a0b40b83d30d4d5a03204d5d2 *man/MMD_Entropy.Rd
+eb09a92d450879fd94a099fbe508360c *man/MMD_Rn.Rd
+e9ead001ac82f2a571b0cbb657a35581 *man/MMD_attr.Rd
+86cd55c8c689ee176eefd2f4e7da4703 *vignettes/README.Rmd
